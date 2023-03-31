@@ -27,26 +27,25 @@ class TensorTrain:
         to scalar.
     """
 
-    def __init__(self, cores: list[jnp.array], shape, ranks):
+    def __init__(self, cores: list[jnp.array], shape, ranks, dtype=None):
         if len(cores) != len(shape) and len(cores) != len(ranks) - 1:
             raise ValueError('Number of dimensions is inconsistent.')
-
-        dtype = cores[0].dtype
-        for i, core in enumerate(cores[1:]):
-            if dtype != core.dtype:
-                raise ValueError('Cores\' dtype is inconsistent: '
-                                 f'dtype of core #0 ({dtype}) does not '
-                                 f'match dtype of core #{i}.')
 
         self.shape = tuple(shape)
         self.ranks = tuple(ranks)
         self.cores = cores
+        self.dtype = dtype or self.cores[0].dtype
 
         # TODO: Remove in the future. Rank should be effective rank.
         self.rank = self.ranks
 
     def __repr__(self) -> str:
-        params = f'ndim={self.ndim}, shape={self.shape}, ranks={self.ranks}'
+        params = ', '.join([
+            f'ndim={self.ndim}',
+            f'shape={self.shape}',
+            f'ranks={self.ranks}',
+            f'dtype={self.dtype}',
+        ])
         return f'{self.__class__.__name__}({params})'
 
     def __add__(self, other) -> 'TensorTrain':
@@ -67,10 +66,6 @@ class TensorTrain:
         return acc.squeeze()
 
     @property
-    def dtype(self):
-        return self.cores[0].dtype
-
-    @property
     def ndim(self):
         return len(self.cores)
 
@@ -80,10 +75,16 @@ class TensorTrain:
 
     @classmethod
     def from_cores(cls, cores: list[jnp.array]) -> 'TensorTrain':
+        dtype = cores[0].dtype
+        for i, core in enumerate(cores[1:]):
+            if dtype != core.dtype:
+                raise ValueError('Cores\' dtype is inconsistent: '
+                                 f'dtype of core #0 ({dtype}) does not '
+                                 f'match dtype of core #{i}.')
         shape = [core.shape[1] for core in cores]
         ranks = [core.shape[0] for core in cores]
         ranks.append(cores[-1].shape[2])
-        return TensorTrain(cores, shape, ranks)
+        return TensorTrain(cores, shape, ranks, dtype)
 
     def tolist(self):  # TODO: Choose proper name.
         return [core.tolist() for core in self.cores]
@@ -95,7 +96,11 @@ class TensorTrain:
         raise NotImplementedError
 
     def tree_flatten(self):
-        return self.cores, {'shape': self.shape, 'ranks': self.ranks}
+        return self.cores, {
+            'shape': self.shape,
+            'ranks': self.ranks,
+            'dtype': self.dtype,
+        }
 
     @classmethod
     def tree_unflatten(cls, treedef, leaves):
@@ -109,8 +114,6 @@ def add(lhs: TensorTrain, rhs):
         if lhs.shape != rhs.shape:
             raise ValueError('Shape of operands mismatch: '
                              f'{lhs.shape} != {rhs.shape}.')
-        # ranks = [1] + [sum(ranks) for ranks in zip(lhs.ranks, rhs.ranks)] +
-        # [1]
         first = jnp.concatenate([lhs.cores[0], rhs.cores[0]], axis=2)
         cores = [first]
         # TODO: Use jax.lax.scan for iterations.
