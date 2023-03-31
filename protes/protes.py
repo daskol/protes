@@ -15,8 +15,8 @@ except ImportError:
     warn(('Package cloudpickle is missing. It is required for loading and '
           'saving sampler object with closures internally.'), ImportWarning)
 
-import tt
-from tt import TensorTrain, TensorTrainDensity
+from protes import tt
+from protes.tt import TensorTrain, TensorTrainDensity
 
 
 @jax.tree_util.register_pytree_node_class
@@ -64,27 +64,27 @@ class TensorTrainSampler:
         return self.indicies[0], self.values[0]
 
     @classmethod
-    def load(cls, where: IO | PathLike):
+    def load(cls, where: IO | PathLike | str):
         """Deserialize sampler from pickled file or file-object.
 
         Args:
             where: Path to file or file-object.
         """
-        if isinstance(where, PathLike):
+        if isinstance(where, PathLike | str):
             with open(where, 'rb') as fileobj:
                 return cls.load(fileobj)
         return cloudpickle.load(where)
 
-    def save(self, where: IO | PathLike):
+    def save(self, where: IO | PathLike | str):
         """Serialize sampler with pickle to file or file-object.
 
         Args:
             where: Path to file or file-object.
         """
-        if isinstance(where, PathLike):
+        if isinstance(where, PathLike | str):
             with open(where, 'wb') as fileobj:
                 return self.save(fileobj)
-        cloudpickle(self, where)
+        cloudpickle.dump(self, where)
 
     def _maximize(self, batch: jax.Array):
         """Maximize log-likelihood on given samples."""

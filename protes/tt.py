@@ -231,7 +231,7 @@ class TensorTrainDensity:
 
         samples = []
         nosamples = reduce(lambda x, y: x * y, shape, 1)
-        keys = jax.random.split(key, nosamples)
+        keys = jax.random.split(key, self.ndim)
         prefix = jnp.ones((nosamples, 1))
         for key, core, suffix in zip(keys, self.train.cores, self.interfaces):
             # Estimate conditional probabilities.
@@ -239,8 +239,8 @@ class TensorTrainDensity:
             probas = pdf / pdf.sum(axis=1, keepdims=True)
 
             # Sample with conditioned unnormalized probabilities.
-            keys = jax.random.split(key, probas.shape[0])
-            ix = sample_fn(keys, probas)
+            subkeys = jax.random.split(key, probas.shape[0])
+            ix = sample_fn(subkeys, probas)
             samples.append(ix[:, None])  # Column of output batch.
 
             # Update conditional probabilities on the left.

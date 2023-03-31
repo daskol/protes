@@ -3,8 +3,7 @@ from functools import partial
 import jax
 import jax.numpy as jnp
 from numpy.testing import assert_allclose
-
-from tt import TensorTrain, TensorTrainDensity, categorical
+from protes.tt import TensorTrain, TensorTrainDensity
 
 
 class TestTensorTrainDensity:
@@ -25,7 +24,6 @@ class TestTensorTrainDensity:
         samples = sample(key, shape, pdf)
         assert samples.shape[:-1] == shape
         assert samples.shape[-1] == train.ndim
-
 
     def test_score():
         # Generate uniform distribution of indices.

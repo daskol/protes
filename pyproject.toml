@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protes"
+authors = [
+    {name = "Daniel Bershatsky", email = "d.bershatsky2@skoltech.ru"},
+]
+description = """
+PRobability Optimizer with TEnsor Sampling (PROTES) is an optimization \
+algorithm based on tensor train decomposition."""
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = [
+    "low-rank",
+    "optimization",
+    "tensor-train",
+    "tt",
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Typing :: Typed",
+]
+dependencies = ["jax", "optax"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+all = ["cloudpickle"]
+test = ["pytest>=7"]
+
+[project.urls]
+"Source" = "https://github.com/daskol/protes"
+"Bug Tracker" = "https://github.com/daskol/protes/issues"
+
+[tool.isort]
+
+[tool.pytest]
+minversion = "7"
+addopts = "-ra -q"
+testpaths = ["protes"]
+
+[tool.setuptools]
+packages = ["protes"]
+
+[tool.setuptools_scm]
+write_to = "protes/version.py"
