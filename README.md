@@ -6,8 +6,8 @@
 
 This is an implementation of PROTES probabilistic optimization algorithm
 [[1][1]] from scratch. Its original implementation is available at
-[anabatsh/protes][2]. The package can be directly installed from GitHub as
-follows.
+[anabatsh/protes][2] and published implementation is at [anabatsh/TT_pro][3].
+The package can be directly installed from GitHub as follows.
 
 ```shell
 pip install git+https://github.com/daskol/protes.git
@@ -98,3 +98,4 @@ details. Other objects are picklable with standard one.
 
 [1]: https://arxiv.org/abs/2301.12162
 [2]: https://github.com/anabatsh/protes
+[3]: https://github.com/anabatsh/TT_pro
