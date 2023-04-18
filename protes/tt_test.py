@@ -3,6 +3,7 @@ from functools import partial
 import jax
 import jax.numpy as jnp
 from numpy.testing import assert_allclose
+
 from protes.tt import TensorTrain, TensorTrainDensity
 
 
