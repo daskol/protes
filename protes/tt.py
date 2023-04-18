@@ -1,5 +1,5 @@
 from functools import partial, reduce
-from typing import Any, Sequence
+from typing import Any, List, Sequence
 
 import jax
 import jax.numpy as jnp
@@ -27,7 +27,7 @@ class TensorTrain:
         to scalar.
     """
 
-    def __init__(self, cores: list[jnp.array], shape, ranks, dtype=None):
+    def __init__(self, cores: List[jnp.array], shape, ranks, dtype=None):
         if len(cores) != len(shape) and len(cores) != len(ranks) - 1:
             raise ValueError('Number of dimensions is inconsistent.')
 
@@ -74,7 +74,7 @@ class TensorTrain:
         return reduce(lambda x, y: x + np.prod(y.shape), self.cores, 0)
 
     @classmethod
-    def from_cores(cls, cores: list[jnp.array]) -> 'TensorTrain':
+    def from_cores(cls, cores: List[jnp.array]) -> 'TensorTrain':
         dtype = cores[0].dtype
         for i, core in enumerate(cores[1:]):
             if dtype != core.dtype:
@@ -193,7 +193,7 @@ class TensorTrainDensity:
          https://arxiv.org/abs/1810.01212
     """
 
-    def __init__(self, train: TensorTrain, interfaces: list[jax.Array]):
+    def __init__(self, train: TensorTrain, interfaces: List[jax.Array]):
         self.train = train
         self.interfaces = interfaces
 

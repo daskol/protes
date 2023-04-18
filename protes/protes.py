@@ -1,7 +1,7 @@
 from functools import partial
 from itertools import count
 from os import PathLike
-from typing import IO, Callable, Optional
+from typing import IO, Callable, Optional, Tuple, Union
 from warnings import warn
 
 import jax
@@ -59,23 +59,23 @@ class TensorTrainSampler:
         return f'{self.__class__.__name__}()'
 
     @property
-    def best(self) -> tuple[jax.Array, jax.Array]:
+    def best(self) -> Tuple[jax.Array, jax.Array]:
         """Best trial. A tuple of minimier and minimum."""
         return self.indicies[0], self.values[0]
 
     @classmethod
-    def load(cls, where: IO | PathLike | str):
+    def load(cls, where: Union[IO, PathLike, str]):
         """Deserialize sampler from pickled file or file-object.
 
         Args:
             where: Path to file or file-object.
         """
-        if isinstance(where, PathLike | str):
+        if isinstance(where, Union[PathLike, str]):
             with open(where, 'rb') as fileobj:
                 return cls.load(fileobj)
         return cloudpickle.load(where)
 
-    def save(self, where: IO | PathLike | str):
+    def save(self, where: Union[IO, PathLike, str]):
         """Serialize sampler with pickle to file or file-object.
 
         Args:
